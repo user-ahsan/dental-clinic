@@ -1,21 +1,23 @@
-import MuiTypography, {
-  TypographyProps as MuiTypographyProps,
-} from '@mui/material/Typography'
-import { FC, JSX } from 'react'
+import MuiTypography from '@mui/material/Typography'
+import { FC, JSX, ReactNode } from 'react'
 
-interface TypographyProps extends MuiTypographyProps {
+interface TypographyProps {
   type?: 'primary' | 'secondary'
+  children?: ReactNode
 }
 
 const Typography: FC<TypographyProps> = ({
   type = 'secondary',
-  ...rest
+  children,
 }): JSX.Element => {
   return (
     <MuiTypography
-      {...rest}
-      fontFamily={type === 'primary' ? 'Be Vietnam Pro' : undefined}
-    ></MuiTypography>
+      sx={{
+        fontFamily: type === 'primary' ? 'Be Vietnam Pro, sans-serif' : 'inherit',
+      }}
+    >
+      {children}
+    </MuiTypography>
   )
 }
 
