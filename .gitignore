@@ -39,3 +39,18 @@
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# temp / debug artifacts
+.tmp/
+
+# playwright mcp artifacts
+.playwright-mcp/
+
+# app screenshots (generated)
+screenshots/
+
+# pm2 ecosystem (local paths/env)
+ecosystem.config.js
+
+# local file-based dependencies
+postcss-fix-dotted-vars/

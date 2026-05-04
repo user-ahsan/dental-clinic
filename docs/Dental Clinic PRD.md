@@ -371,6 +371,21 @@ Below is the exhaustive list of all distinct views/pages required for the Next.j
 3. **Phase 3: Clinical Doctor Operations**  
    * Build the rich Doctor Profile management page.  
    * Build the "Active Queue" and Consultation screen.  
-4. **Phase 4: Billing & Public Portal**  
-   * Implement Invoicing logic.  
+4. **Phase 4: Billing & Public Portal**
+   * Implement Invoicing logic.
    * Open the public booking portal connected to the actual schedule, dynamically showcasing Doctor Profiles and Clinic Locations.
+
+## 10. Known Vulnerabilities
+
+| Component | Vulnerability | Status | Mitigation |
+|-----------|---------------|--------|------------|
+| Next.js 15.3.2 | GHSA-9qr9-h5gf-34mp (RCE) | Unpatched | Monitor for security patches; consider adding additional WAF rules |
+| React 19.0.0 | GHSA-fmh4-wr37-44fp (RCE) | Unpatched | Consider downgrading to React 18.3.1 until patch is available |
+
+## 11. Security Considerations
+
+- All database operations use Row Level Security (RLS) policies
+- Supabase Auth handles session management
+- Environment variables store sensitive credentials
+- Storage buckets have strict access policies (patient-documents is private)
+- API routes validate user permissions before processing requests
