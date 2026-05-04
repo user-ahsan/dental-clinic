@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { useAuth } from "@/contexts/auth.context"
 import { Card, CardContent } from "@/components/ui/card"
-import { showInfo } from "@/lib/toast-utils"
+
 import { appointmentTypes } from "./_components/types"
 import { StepServiceSelection, ServiceTypeCards } from "./_components/step-service"
 import { StepDateTime } from "./_components/step-date-time"
@@ -28,19 +28,6 @@ export default function BookingPage() {
     }
   }, [user, router])
 
-  // Step completion toasts
-  useEffect(() => {
-    if (selectedType !== null) {
-      const service = appointmentTypes.find((t) => t.id === selectedType)
-      if (service) showInfo(`Selected: ${service.name}`)
-    }
-  }, [selectedType])
-
-  useEffect(() => {
-    if (selectedDate && selectedTime) {
-      showInfo(`Date & time selected: ${selectedDate} at ${selectedTime}`)
-    }
-  }, [selectedDate, selectedTime])
 
   if (!user) {
     return (

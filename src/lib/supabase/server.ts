@@ -33,7 +33,8 @@ export async function createClient() {
             cookieStore.set(name, value, options)
           );
         } catch (error) {
-          console.error('Failed to set cookies in Server Component:', error);
+          console.error('[Supabase Server] Failed to set cookies - auth may be stale:', error);
+          // The request can continue but session refresh may fail silently
         }
       },
     },

@@ -14,12 +14,18 @@ import { toast } from "sonner"
 import { AlertTriangle, CalendarX } from "lucide-react"
 import type { Appointment } from "./types"
 
-const AppointmentFilters = nextDynamic(() => import('./_components/appointment-filters') as any, {
-  loading: () => <Skeleton className="h-16 w-full rounded-lg" />,
-})
-const AppointmentTable = nextDynamic(() => import('./_components/appointment-table') as any, {
-  loading: () => <TableSkeleton />,
-})
+const AppointmentFilters = nextDynamic(
+  () => import('./_components/appointment-filters').then((m) => m.AppointmentFilters),
+  {
+    loading: () => <Skeleton className="h-16 w-full rounded-lg" />,
+  },
+)
+const AppointmentTable = nextDynamic(
+  () => import('./_components/appointment-table').then((m) => m.AppointmentTable),
+  {
+    loading: () => <TableSkeleton />,
+  },
+)
 
 interface ApiAppointment {
   id: string
@@ -116,7 +122,7 @@ export default function AdminAppointmentsPage() {
             View and manage all patient appointments
           </p>
         </div>
-        <Button variant="default" onClick={() => toast("Opening new appointment form")}>
+        <Button variant="default" onClick={() => toast("Appointment scheduling coming soon")}>
           <Box component={CalendarIcon} sx={{ width: 16, height: 'auto' }} className="mr-2" />
           New Appointment
         </Button>
@@ -152,22 +158,22 @@ export default function AdminAppointmentsPage() {
           <CalendarX className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
           <p className="text-muted-foreground text-lg">No appointments found</p>
           <p className="text-muted-foreground text-sm mt-1">Create your first appointment to get started</p>
-          <Button variant="default" className="mt-4" onClick={() => toast("Opening new appointment form")}>New Appointment</Button>
+          <Button variant="default" className="mt-4" onClick={() => toast("Appointment scheduling coming soon")}>New Appointment</Button>
         </div>
       )}
 
       {/* Content */}
       {!isLoading && !error && appointments.length > 0 && (
         <>
-          <AppointmentFilters {...({
-            searchTerm,
-            statusFilter,
-            doctorFilter,
-            onSearchChange: setSearchTerm,
-            onStatusChange: setStatusFilter,
-            onDoctorChange: setDoctorFilter,
-          } as any)} />
-          <AppointmentTable appointments={filteredAppointments} {...({} as any)} />
+          <AppointmentFilters
+            searchTerm={searchTerm}
+            statusFilter={statusFilter}
+            doctorFilter={doctorFilter}
+            onSearchChange={setSearchTerm}
+            onStatusChange={setStatusFilter}
+            onDoctorChange={setDoctorFilter}
+          />
+          <AppointmentTable appointments={filteredAppointments} />
         </>
       )}
     </div>

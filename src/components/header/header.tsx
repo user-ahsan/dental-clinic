@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = memo(function Header({
     <header
       className={cn(
         "w-full bg-white border-b border-slate-200",
-        sticky && "sticky top-0 z-40",
+        sticky && "sticky top-0 z-20",
         className
       )}
     >

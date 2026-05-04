@@ -60,12 +60,26 @@ export default function ContactPage() {
 
     setIsSubmitting(true)
     try {
-      // TODO: Replace with actual API call when /api/contact endpoint is ready
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          phone: (formData.get('phone') as string)?.trim() || undefined,
+          message: reason,
+        }),
+      })
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null)
+        throw new Error(errData?.error ?? 'Failed to send message')
+      }
+
       toast.success("Message sent! We'll get back to you soon.")
       form.reset()
-    } catch {
-      toast.error("Failed to send message. Please try again.")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to send message. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

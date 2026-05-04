@@ -104,7 +104,10 @@ export function useCreateAppointment(): UseMutationResult<Appointment, Error, Cr
         body: JSON.stringify(input),
       });
       if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
+        const error = await response.json().catch((parseErr) => {
+          console.error('[useAppointment] Failed to parse error response:', parseErr);
+          return { message: 'Unknown server error' };
+        });
         throw new Error(error.message || "Failed to create appointment");
       }
       return response.json() as Promise<Appointment>;
@@ -169,7 +172,10 @@ export function useUpdateAppointment(): UseMutationResult<Appointment, Error, Up
         body: JSON.stringify(input),
       });
       if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
+        const error = await response.json().catch((parseErr) => {
+          console.error('[useAppointment] Failed to parse error response:', parseErr);
+          return { message: 'Unknown server error' };
+        });
         throw new Error(error.message || "Failed to update appointment");
       }
       return response.json() as Promise<Appointment>;

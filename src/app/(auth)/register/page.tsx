@@ -34,7 +34,8 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<RegisterPatientInput>({
-    resolver: zodResolver(registerPatientSchema) as any,
+    // @ts-expect-error Zod v4 resolver type mismatch with react-hook-form
+    resolver: zodResolver(registerPatientSchema),
     defaultValues: { fullName: "", email: "", password: "", confirmPassword: "", role: "PATIENT" },
     mode: "onBlur",
   })
@@ -112,7 +113,14 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          handleSubmit(onSubmit as any)(e)
+        }}
+        className="space-y-5"
+      >
         {step === "account" && (
           <>
             <div className="space-y-2">

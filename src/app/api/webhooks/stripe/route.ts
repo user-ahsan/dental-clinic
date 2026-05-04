@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
       webhookType: event.type,
     });
   } catch (queueError) {
-    // Queue is down — still return 200 so Stripe doesn't think the endpoint is dead.
-    // The event can be replayed from Stripe dashboard.
+    // Intentionally continue — Stripe expects 200 even if our queue is down.
+    // Events can be replayed from the Stripe dashboard.
     console.error('[stripe-webhook] Failed to enqueue event:', queueError);
   }
 

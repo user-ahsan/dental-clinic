@@ -67,11 +67,11 @@ const Footer: React.FC = memo(function Footer() {
             <h3 className='text-lg font-semibold text-white mb-6'>Services</h3>
             <ul className='space-y-4'>
               {[
-                { href: '/services#cleaning', label: 'Teeth Cleaning' },
-                { href: '/services#whitening', label: 'Teeth Whitening' },
-                { href: '/services#braces', label: 'Braces & Aligners' },
-                { href: '/services#implants', label: 'Dental Implants' },
-                { href: '/services#emergency', label: 'Emergency Care' },
+                { href: '/services/general', label: 'Teeth Cleaning' },
+                { href: '/services/cosmetic', label: 'Teeth Whitening' },
+                { href: '/services/orthodontics', label: 'Braces & Aligners' },
+                { href: '/services/oral-surgery', label: 'Dental Implants' },
+                { href: '/services/emergency', label: 'Emergency Care' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

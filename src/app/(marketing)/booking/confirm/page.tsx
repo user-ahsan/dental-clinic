@@ -43,16 +43,29 @@ function BookingConfirmContent() {
   const handleConfirm = useCallback(async () => {
     setConfirming(true)
     try {
-      // Simulate API call — replace with real submission when API endpoint is ready
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const res = await fetch('/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_type: String(typeId),
+          appointment_date: date,
+          appointment_time: time,
+        }),
+      })
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null)
+        throw new Error(errData?.error ?? 'Failed to confirm appointment')
+      }
+
       setConfirmed(true)
       toast.success("Appointment confirmed! Check your email for details.")
-    } catch {
-      toast.error("Failed to confirm appointment. Please try again.")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to confirm appointment. Please try again.')
     } finally {
       setConfirming(false)
     }
-  }, [])
+  }, [typeId, date, time])
 
   if (!user) {
     return <LoadingSpinner />

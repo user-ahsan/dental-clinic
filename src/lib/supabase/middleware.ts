@@ -111,12 +111,12 @@ export async function updateSession(request: NextRequest) {
   // Query the app_user table for the user's role (DB source of truth)
   let role: string | null = null;
   try {
-    const { data: appUser } = await (supabase as any)
+    const { data: appUser } = await supabase
       .from('app_user')
       .select('role')
       .eq('id', user.id)
       .single();
-    role = appUser?.role ?? null;
+    role = (appUser as { role: string } | null)?.role ?? null;
   } catch {
     // Fall back to user metadata if the DB query fails
     role = (user.app_metadata?.role as string) ?? null;

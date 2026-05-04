@@ -17,10 +17,11 @@ function getStripe(): Stripe {
 
 export const handleInvoicePaid: WebhookHandler = async (payload) => {
   const invoice = payload as Stripe.Invoice;
-  const supabase = await createAdminClient() as any;
+  const supabase = createAdminClient();
 
   await supabase
     .from('invoice')
+    // @ts-expect-error — Supabase typed client resolves .update() to never (version mismatch)
     .update({
       status: 'PAID',
       paid_at: new Date().toISOString(),
@@ -30,10 +31,11 @@ export const handleInvoicePaid: WebhookHandler = async (payload) => {
 
 export const handlePaymentFailed: WebhookHandler = async (payload) => {
   const invoice = payload as Stripe.Invoice;
-  const supabase = await createAdminClient() as any;
+  const supabase = createAdminClient();
 
   await supabase
     .from('invoice')
+    // @ts-expect-error — Supabase typed client resolves .update() to never (version mismatch)
     .update({
       status: 'FAILED',
     })
@@ -42,10 +44,11 @@ export const handlePaymentFailed: WebhookHandler = async (payload) => {
 
 export const handleSubscriptionDeleted: WebhookHandler = async (payload) => {
   const subscription = payload as Stripe.Subscription;
-  const supabase = await createAdminClient() as any;
+  const supabase = createAdminClient();
 
   await supabase
     .from('invoice')
+    // @ts-expect-error — Supabase typed client resolves .update() to never (version mismatch)
     .update({
       status: 'CANCELLED',
     })

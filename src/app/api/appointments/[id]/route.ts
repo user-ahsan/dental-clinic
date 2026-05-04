@@ -27,18 +27,20 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const supabase = await createClient() as any;
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: currentUser } = await supabase
+    const { data } = await supabase
       .from('app_user')
       .select('clinic_id')
       .eq('id', user.id)
       .single();
+
+    const currentUser = data as { clinic_id: string } | null;
 
     if (!currentUser?.clinic_id) {
       return NextResponse.json({ error: 'No clinic associated' }, { status: 403 });
@@ -70,12 +72,12 @@ export async function PATCH(
 
     // Validate status transition if status is being changed
     if (parsed.data.status) {
-      const allowed = STATUS_TRANSITIONS[existing.status] ?? [];
+      const allowed = STATUS_TRANSITIONS[(existing as { status: string }).status] ?? [];
       if (!allowed.includes(parsed.data.status)) {
         return NextResponse.json(
           {
             error: 'Invalid status transition',
-            details: `Cannot transition from ${existing.status} to ${parsed.data.status}`,
+            details: `Cannot transition from ${(existing as { status: string }).status} to ${parsed.data.status}`,
           },
           { status: 422 },
         );
@@ -84,7 +86,8 @@ export async function PATCH(
 
     const { data: updated, error: updateError } = await supabase
       .from('appointment')
-      .update(parsed.data)
+      // @ts-expect-error — Supabase typed client resolves .update() on filtered chain to never (version mismatch)
+      .update(parsed.data as Record<string, unknown>)
       .eq('id', id)
       .eq('clinic_id', currentUser.clinic_id)
       .select()
@@ -109,18 +112,20 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const supabase = await createClient() as any;
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: currentUser } = await supabase
+    const { data } = await supabase
       .from('app_user')
       .select('clinic_id')
       .eq('id', user.id)
       .single();
+
+    const currentUser = data as { clinic_id: string } | null;
 
     if (!currentUser?.clinic_id) {
       return NextResponse.json({ error: 'No clinic associated' }, { status: 403 });
@@ -140,13 +145,14 @@ export async function DELETE(
       return NextResponse.json({ error: 'Appointment not found' }, { status: 404 });
     }
 
-    if (existing.status === 'CANCELLED') {
+    if ((existing as { status: string }).status === 'CANCELLED') {
       return NextResponse.json({ error: 'Appointment is already cancelled' }, { status: 409 });
     }
 
     const { error: cancelError } = await supabase
       .from('appointment')
-      .update({ status: 'CANCELLED' as AppointmentStatus })
+      // @ts-expect-error — Supabase typed client resolves .update() on filtered chain to never (version mismatch)
+      .update({ status: 'CANCELLED' as AppointmentStatus } as Record<string, unknown>)
       .eq('id', id)
       .eq('clinic_id', currentUser.clinic_id);
 

@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server';
  */
 export async function GET() {
   try {
-    const supabase = await createClient() as any;
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -19,11 +19,13 @@ export async function GET() {
     }
 
     // Get the user's clinic_id
-    const { data: currentUser } = await supabase
+    const { data } = await supabase
       .from('app_user')
       .select('clinic_id')
       .eq('id', user.id)
       .single();
+
+    const currentUser = data as { clinic_id: string } | null;
 
     if (!currentUser?.clinic_id) {
       return NextResponse.json({ error: 'No clinic associated' }, { status: 403 });

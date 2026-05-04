@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
+
+type PatientProfile = Database['public']['Tables']['patient_profile']['Row'];
+type PatientQueryRow = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string | null;
+  avatar_url: string | null;
+  status: string;
+  created_at: string;
+  patient_profile: PatientProfile;
+};
 
 // GET /api/patients — list all patients for the authenticated user's clinic
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient() as any;
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -12,11 +26,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's clinic_id
-    const { data: currentUser } = await supabase
+    const { data } = await supabase
       .from('app_user')
       .select('clinic_id')
       .eq('id', user.id)
       .single();
+
+    const currentUser = data as { clinic_id: string } | null;
 
     if (!currentUser?.clinic_id) {
       return NextResponse.json({ error: 'No clinic associated' }, { status: 403 });
@@ -69,7 +85,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Flatten the response
-    const formatted = patients?.map((p: any) => ({
+    const formatted = patients?.map((p: PatientQueryRow) => ({
       id: p.id,
       name: `${p.first_name} ${p.last_name}`,
       email: p.email,
@@ -77,7 +93,7 @@ export async function GET(request: NextRequest) {
       avatar_url: p.avatar_url,
       status: p.status,
       created_at: p.created_at,
-      profile: (p.patient_profile as unknown as Record<string, unknown>) ?? null,
+      profile: p.patient_profile,
     })) ?? [];
 
     return NextResponse.json({

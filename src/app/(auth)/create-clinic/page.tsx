@@ -18,7 +18,7 @@ type Step = "clinic" | "admin"
 
 export default function CreateClinicPage() {
   const router = useRouter()
-  const supabase = createClient() as any;
+  const supabase = createClient();
   const [step, setStep] = useState<Step>("clinic")
   const [submitError, setSubmitError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -67,6 +67,7 @@ export default function CreateClinicPage() {
       // 2. Create clinic record
       const { data: clinic, error: clinicError } = await supabase
         .from("clinic")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .insert({
           name: clinicData.clinicName,
           owner_id: authData.user.id,
@@ -74,24 +75,27 @@ export default function CreateClinicPage() {
           city: clinicData.city ?? null,
           state: clinicData.state ?? null,
           country: clinicData.country ?? null,
-        })
+        } as any)
         .select("id, invite_code")
         .single()
 
       if (clinicError) throw clinicError
 
+      const createdClinic = clinic as { id: string; invite_code: string }
+
       // 3. Link admin user to the clinic
       await supabase
         .from("app_user")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .insert({
           id: authData.user.id,
           email: adminData.email,
           role: "ADMIN",
-          clinic_id: clinic.id,
+          clinic_id: createdClinic.id,
           first_name: adminData.fullName.split(" ")[0] ?? adminData.fullName,
           last_name: adminData.fullName.split(" ").slice(1).join(" ") || "",
           status: "ACTIVE",
-        })
+        } as any)
 
       toast.success("Clinic created! Please check your email to confirm your account.")
       router.push("/login?clinic_created=true")

@@ -14,7 +14,7 @@ const createAppointmentSchema = z.object({
 // GET /api/appointments — list appointments for the authenticated user's clinic
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient() as any;
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -22,11 +22,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Get the user's clinic_id
-    const { data: currentUser } = await (supabase as any)
+    const { data } = await supabase
       .from('app_user')
       .select('clinic_id')
       .eq('id', user.id)
       .single();
+
+    const currentUser = data as { clinic_id: string } | null;
 
     if (!currentUser?.clinic_id) {
       return NextResponse.json({ error: 'No clinic associated' }, { status: 403 });
@@ -74,7 +76,7 @@ export async function GET(request: NextRequest) {
 // POST /api/appointments — create a new appointment
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient() as any;
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -82,11 +84,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user's clinic_id
-    const { data: currentUser } = await supabase
+    const { data } = await supabase
       .from('app_user')
       .select('clinic_id')
       .eq('id', user.id)
       .single();
+
+    const currentUser = data as { clinic_id: string } | null;
 
     if (!currentUser?.clinic_id) {
       return NextResponse.json({ error: 'No clinic associated' }, { status: 403 });
@@ -104,15 +108,16 @@ export async function POST(request: NextRequest) {
 
     const { data: appointment, error } = await supabase
       .from('appointment')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .insert({
         clinic_id: currentUser.clinic_id,
         patient_id: parsed.data.patient_id,
         doctor_id: parsed.data.doctor_id ?? null,
         start_time: parsed.data.start_time,
         end_time: parsed.data.end_time,
-        status: 'SCHEDULED',
+        status: 'SCHEDULED' as const,
         notes: parsed.data.notes ?? null,
-      })
+      } as any)
       .select()
       .single();
 

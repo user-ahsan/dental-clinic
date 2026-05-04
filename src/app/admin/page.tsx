@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import nextDynamic from "next/dynamic"
 import { useQuery } from "@tanstack/react-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,25 +8,28 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AlertTriangle, CalendarDays, CalendarX, DollarSign, MessageSquareText, Users } from "lucide-react"
 
-const QuickActions = nextDynamic(() => import('./_components/quick-actions') as any, {
+const QuickActions = nextDynamic(() => import('./_components/quick-actions').then((m) => m.QuickActions), {
   loading: () => null,
 })
-const RecentAppointmentsList = nextDynamic(() => import('./_components/recent-appointments') as any, {
-  loading: () => (
-    <Card className="bg-white">
-      <CardHeader><Skeleton className="h-6 w-48" /></CardHeader>
-      <CardContent className="space-y-4">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-center gap-4">
-            <Skeleton className="w-10 h-10 rounded-full" />
-            <div className="flex-1"><Skeleton className="h-4 w-32 mb-1" /><Skeleton className="h-3 w-24" /></div>
-            <Skeleton className="h-6 w-20 rounded-full" />
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  ),
-})
+const RecentAppointmentsList = nextDynamic(
+  () => import('./_components/recent-appointments').then((m) => m.RecentAppointmentsList),
+  {
+    loading: () => (
+      <Card className="bg-white">
+        <CardHeader><Skeleton className="h-6 w-48" /></CardHeader>
+        <CardContent className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Skeleton className="w-10 h-10 rounded-full" />
+              <div className="flex-1"><Skeleton className="h-4 w-32 mb-1" /><Skeleton className="h-3 w-24" /></div>
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    ),
+  },
+)
 
 export const dynamic = 'force-dynamic'
 
@@ -87,9 +91,8 @@ interface Appointment {
   status: string
 }
 
-function computeStats(appointments: ApiAppointment[]) {
-  const today = new Date().toISOString().split('T')[0] ?? ''
-  const todayCount = appointments.filter(a => a.start_time ? a.start_time.startsWith(today) : false).length
+function computeStats(appointments: ApiAppointment[], todayStr: string) {
+  const todayCount = appointments.filter(a => a.start_time ? a.start_time.startsWith(todayStr) : false).length
   return {
     todayAppointments: todayCount,
     totalAppointments: appointments.length,
@@ -115,9 +118,10 @@ export default function AdminDashboardPage() {
     },
   })
 
-  const stats = computeStats(appointments)
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0] ?? '', [])
+  const stats = computeStats(appointments, todayStr)
   const recentAppointments: Appointment[] = [...appointments]
-    .sort((a, b) => b.start_time?.localeCompare(a.start_time))
+    .sort((a, b) => (b.start_time ?? '').localeCompare(a.start_time ?? ''))
     .slice(0, 5)
     .map((a: ApiAppointment) => ({
       id: a.id,
@@ -214,7 +218,7 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
       ) : (
-        <RecentAppointmentsList appointments={recentAppointments} {...({} as any)} />
+        <RecentAppointmentsList appointments={recentAppointments} />
       )}
       <QuickActions />
     </div>

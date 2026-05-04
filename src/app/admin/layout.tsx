@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Mobile overlay backdrop */}
       {sidebarOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          className="lg:hidden fixed inset-0 z-30 bg-black/50"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -81,7 +81,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar - fixed on mobile, static on desktop */}
       <div
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 flex transition-transform duration-300 ease-in-out",
+          "fixed lg:static inset-y-0 left-0 z-[31] flex transition-transform duration-300 ease-in-out",
           "lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
@@ -141,7 +141,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Mobile top bar with hamburger toggle */}
-        <div className="lg:hidden sticky top-0 z-30 flex items-center h-14 px-4 bg-white border-b border-gray-200">
+        <div className="lg:hidden sticky top-0 z-20 flex items-center h-14 px-4 bg-white border-b border-gray-200">
           <Button
             variant="ghost"
             size="icon"

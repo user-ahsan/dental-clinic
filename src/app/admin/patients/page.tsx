@@ -12,15 +12,24 @@ import { toast } from "sonner"
 import { AlertTriangle, Plus, Users } from "lucide-react"
 import type { Patient } from "./types"
 
-const PatientStatCards = nextDynamic(() => import('./_components/patient-stat-cards') as any, {
-  loading: () => <StatCardsSkeleton />,
-})
-const PatientFilters = nextDynamic(() => import('./_components/patient-filters') as any, {
-  loading: () => <Skeleton className="h-16 w-full rounded-lg" />,
-})
-const PatientTable = nextDynamic(() => import('./_components/patient-table') as any, {
-  loading: () => <TableSkeleton />,
-})
+const PatientStatCards = nextDynamic(
+  () => import('./_components/patient-stat-cards').then((m) => m.PatientStatCards),
+  {
+    loading: () => <StatCardsSkeleton />,
+  },
+)
+const PatientFilters = nextDynamic(
+  () => import('./_components/patient-filters').then((m) => m.PatientFilters),
+  {
+    loading: () => <Skeleton className="h-16 w-full rounded-lg" />,
+  },
+)
+const PatientTable = nextDynamic(
+  () => import('./_components/patient-table').then((m) => m.PatientTable),
+  {
+    loading: () => <TableSkeleton />,
+  },
+)
 
 interface ApiPatient {
   id: string
@@ -138,7 +147,7 @@ export default function AdminPatientsPage() {
             Manage patient records and history
           </p>
         </div>
-        <Button variant="default" onClick={() => toast("Opening add patient form")}>
+        <Button variant="default" onClick={() => toast("Patient registration coming soon")}>
           <Plus className="w-4 h-4 mr-2" />
           Add Patient
         </Button>
@@ -175,7 +184,7 @@ export default function AdminPatientsPage() {
           <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
           <p className="text-muted-foreground text-lg">No patients found</p>
           <p className="text-muted-foreground text-sm mt-1">Add a patient to get started</p>
-          <Button variant="default" className="mt-4" onClick={() => toast("Opening add patient form")}>
+          <Button variant="default" className="mt-4" onClick={() => toast("Patient registration coming soon")}>
             <Plus className="w-4 h-4 mr-2" />
             Add Patient
           </Button>
@@ -185,14 +194,14 @@ export default function AdminPatientsPage() {
       {/* Content */}
       {!isLoading && !error && patients.length > 0 && (
         <>
-          <PatientStatCards stats={stats} {...({} as any)} />
-          <PatientFilters {...({
-            searchTerm,
-            statusFilter,
-            onSearchChange: setSearchTerm,
-            onStatusChange: setStatusFilter,
-          } as any)} />
-          <PatientTable patients={filteredPatients} {...({} as any)} />
+          <PatientStatCards stats={stats} />
+          <PatientFilters
+            searchTerm={searchTerm}
+            statusFilter={statusFilter}
+            onSearchChange={setSearchTerm}
+            onStatusChange={setStatusFilter}
+          />
+          <PatientTable patients={filteredPatients} />
         </>
       )}
     </div>
