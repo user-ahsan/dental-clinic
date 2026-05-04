@@ -16,6 +16,9 @@ const eslintConfig = defineConfig(
     rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
     },
+  },
+  {
+    ignores: ['src/__tests__/**', '**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
   }
 )
 

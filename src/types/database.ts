@@ -64,6 +64,7 @@ export enum InvoiceStatus {
   PARTIAL = 'PARTIAL',
   OVERDUE = 'OVERDUE',
   CANCELLED = 'CANCELLED',
+  FAILED = 'FAILED',
 }
 
 // =============================================================================
@@ -230,6 +231,8 @@ export interface Invoice {
   clinic_id: string;
   patient_id: string | null;
   appointment_id: string | null;
+  stripe_invoice_id: string | null;
+  stripe_subscription_id: string | null;
   sub_total: number;
   tax_amount: number;
   total_amount: number;

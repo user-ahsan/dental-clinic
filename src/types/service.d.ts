@@ -6,6 +6,7 @@ declare global {
     description: string
     icon?: ReactElement
     image?: string
+    features?: string[]
   }
 }
 

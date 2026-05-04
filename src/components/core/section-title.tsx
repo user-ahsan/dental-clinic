@@ -13,7 +13,7 @@ const SectionTitle: FC<Props> = ({ children }: Props) => {
       variant='h2'
       component='h2'
       sx={{
-        fontSize: 14,
+        fontSize: '0.875rem',
         color: 'primary.main',
         position: 'relative',
         letterSpacing: '0.02rem',

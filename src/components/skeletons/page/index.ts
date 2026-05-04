@@ -1,0 +1,7 @@
+export { PageSkeleton } from "./generic-page-skeleton"
+export { ServicesPageSkeleton } from "./services-page-skeleton"
+export { BookingPageSkeleton } from "./booking-page-skeleton"
+export { DoctorsPageSkeleton } from "./doctors-page-skeleton"
+export { AdminDashboardSkeleton } from "./admin-dashboard-skeleton"
+export { AdminTableSkeleton } from "./admin-table-skeleton"
+export { AdminDoctorsSkeleton } from "./admin-doctors-skeleton"

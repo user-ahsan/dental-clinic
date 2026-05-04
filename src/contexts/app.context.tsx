@@ -1,28 +1,56 @@
 'use client'
 
-import React, { FC, ReactNode, useState, createContext } from 'react'
+import React, { useMemo } from 'react'
 
-// import Cookie from 'js-cookie'
+// Theme state context - used internally by ThemeSync component
+// Prefer using useTheme() from 'next-themes' for dark mode operations
+type ThemeState = {
+  isDark: boolean
+}
 
-// constants
-// import { PREFERRED_MODE_KEY } from '@/constants'
+type ThemeActions = {
+  toggleTheme: () => void
+}
 
-// context
-export const AppContext = createContext<AppState>({} as AppState)
+export type ThemeContextValue = ThemeState & ThemeActions
 
-export const AppContextProvider: FC<{ children: ReactNode }> = ({
+export const ThemeContext = React.createContext<ThemeContextValue | undefined>(
+  undefined
+)
+
+export const useThemeContext = (): ThemeContextValue => {
+  const context = React.useContext(ThemeContext)
+  if (context === undefined) {
+    throw new Error(
+      'useThemeContext must be used within a ThemeContextProvider'
+    )
+  }
+  return context
+}
+
+interface ThemeContextProviderProps {
+  children: React.ReactNode
+  isDark: boolean
+  onToggle: () => void
+}
+
+export const ThemeContextProvider: React.FC<ThemeContextProviderProps> = ({
   children,
+  isDark,
+  onToggle,
 }) => {
-  // const storageConfig =
-  //   typeof window !== 'undefined'
-  //     ? window.localStorage.getItem(PREFERRED_MODE_KEY)
-  //     : 'light'
-
-  const [isDark, setIsDark] = useState<boolean>(false)
+  // Memoize the context value to prevent unnecessary re-renders
+  // This is the key fix for Context abuse - stable reference prevents
+  // all consumers from re-rendering when unrelated state changes
+  const value = useMemo(
+    () => ({
+      isDark,
+      toggleTheme: onToggle,
+    }),
+    [isDark, onToggle]
+  )
 
   return (
-    <AppContext.Provider value={{ isDark, setIsDark }}>
-      {children}
-    </AppContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   )
 }

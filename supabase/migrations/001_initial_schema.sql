@@ -258,6 +258,11 @@ CREATE POLICY "Users can view app users in their clinic"
         clinic_id IN (SELECT clinic_id FROM app_user WHERE id = auth.uid())
     );
 
+-- Security Fix: Add INSERT policy for app_user (users create their own profile)
+CREATE POLICY "Users can create their own profile"
+    ON app_user FOR INSERT
+    WITH CHECK (id = auth.uid());
+
 CREATE POLICY "Users can update their own profile"
     ON app_user FOR UPDATE
     USING (id = auth.uid());
@@ -277,6 +282,11 @@ CREATE POLICY "Admins can manage staff in their clinic"
 CREATE POLICY "Users can view their own patient profile"
     ON patient_profile FOR SELECT
     USING (user_id = auth.uid());
+
+-- Security Fix: Add INSERT policy for patient_profile (users create their own patient profile)
+CREATE POLICY "Users can create their own patient profile"
+    ON patient_profile FOR INSERT
+    WITH CHECK (user_id = auth.uid());
 
 CREATE POLICY "Users can update their own patient profile"
     ON patient_profile FOR UPDATE
@@ -323,9 +333,17 @@ CREATE POLICY "Doctors can update their own profile"
     USING (user_id = auth.uid());
 
 -- Service policies
-CREATE POLICY "Anyone can view active services"
+-- Security Fix: Only authenticated users can view services, and only for their own clinic
+CREATE POLICY "Authenticated users can view services in their clinic"
     ON service FOR SELECT
-    USING (is_active = true);
+    USING (
+        is_active = true
+        AND EXISTS (
+            SELECT 1 FROM app_user au
+            WHERE au.id = auth.uid()
+            AND au.clinic_id = service.clinic_id
+        )
+    );
 
 CREATE POLICY "Clinic staff can manage services in their clinic"
     ON service FOR ALL

@@ -1,0 +1,10 @@
+{
+  "name": "postcss-fix-dotted-vars",
+  "version": "1.0.0",
+  "description": "PostCSS plugin to escape dots in CSS custom property var() references for SWC compatibility",
+  "main": "index.cjs",
+  "license": "MIT",
+  "peerDependencies": {
+    "postcss": "^8.0.0"
+  }
+}

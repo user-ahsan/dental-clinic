@@ -153,9 +153,56 @@ export const createClinicSchema = z.object({
     .nullable(),
 });
 
+// Patient registration schema (used in registration form)
+export const registerPatientSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'Full name is required')
+    .max(100, 'Full name must be less than 100 characters'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .min(8, 'Password must be at least 8 characters')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    ),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+  role: z.enum(['PATIENT', 'ADMIN']).default('PATIENT'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+});
+
+// Clinic admin registration (used in create-clinic flow)
+export const clinicAdminSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'Full name is required')
+    .max(100, 'Full name must be less than 100 characters'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .min(8, 'Password must be at least 8 characters')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    ),
+});
+
 // Type exports
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type StaffRegisterInput = z.infer<typeof staffRegisterSchema>;
 export type JoinClinicInput = z.infer<typeof joinClinicSchema>;
 export type CreateClinicInput = z.infer<typeof createClinicSchema>;
+export type RegisterPatientInput = z.infer<typeof registerPatientSchema>;
+export type ClinicAdminInput = z.infer<typeof clinicAdminSchema>;
